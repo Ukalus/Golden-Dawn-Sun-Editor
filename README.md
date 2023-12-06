@@ -14,7 +14,7 @@ it could have something todo with the skeleton matrices
 
 #### Quick Setup
 
-    ./quick_setup
+    ./quick_setup ./ROM/filename.nds
 
 #### 1. Get a Golden Sun: Dark Dawn ROM
 
@@ -26,7 +26,7 @@ You can dump the file from your Legally owned Cardridge
 
 This only gives you the Assets of the ROM, not the Code 
 
-    ndstool -x ./filename.nds -d unpacked_rom/data
+    ndstool -x .ROM/filename.nds -d unpacked_rom/data
 
 #### 4.  
 
