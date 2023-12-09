@@ -99,11 +99,11 @@ def NARC_Unpack(narc, output=None, decompress = True):
             for x in range(0, fatb_nFiles):
                 fntb_name.append(str(x))
             pass
-        print(fntb_name)
-        print("does it go until here?")
         # File Images (FIMG)
         # This offset isnt correct but else it works, have to figure out why (can get correct files if manually changing offset per narc file)
         fimg_offset = narc_file.tell() + 0x8
+        mystirouse_data = narc_file.read(152)
+        print(mystirouse_data)
         fimg_magic, fimg_sectionSize = struct.unpack("<LL", narc_file.read(8))
 
         # Extract it now

@@ -43,6 +43,9 @@ Removing bytes from file (1131 bytes in example)
 Viewing (most) nintendo 3D/Texture/Animation files
 
     apicula view <filename,foldername>
+View all files in a directory tree using apicula 
+
+    apicula view $(find ./unpacked_rom -type f)
 
 Decompress .cbmdl files (LZX using compression)
 
