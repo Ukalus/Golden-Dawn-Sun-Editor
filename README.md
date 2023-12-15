@@ -1,7 +1,19 @@
 # Golden Sun: Dark Dawn RE
 
+note: This is a mess right now, come back in a few weeks
+
 note: Apicula might be responible for some of the messed up models (weird proportions) 
 it could have something todo with the skeleton matrices
+
+
+# Current best way to export the most amount of assets so that one can view / extract them with apicula
+
+1. Unpack with Tinke 
+2. Unpack with Tinke again
+3. Unpack with Tinke AGAIN (No joke)
+4. Make sure lzx is installed in the third_party folder (quick setup script needs this to decompress files)
+5. run `python ./scripts/quick_setup` 
+6. enjoy ( current highest number of viewable models: 4270) some texture bugs
 
 ## Tools
 
@@ -89,7 +101,8 @@ Get all paths of file with certain extension
 - are often paired up with .cbmdl files
 - maybe additional data for rendering? 
 - maybe stands for compressed binary?
-- might be data on where objects are spawned? 
+- might be data on where objects are spawned? ./unpacked_rom/flmodel/djinn02.narc/djinn02.narc/djinn02.narc
+./unpacked_rom/flmodel/chibi_col_04.narc/niru.narc/niru.narc
 
 ### .narc
 
@@ -105,3 +118,28 @@ Get all paths of file with certain extension
 - some of the files have the same compression used in .cbmdl files (LZ40)
 - Some Models have weird Proportions (like very a small head) <- still has to be figured out why
 
+
+
+# IMPORTANT NOTE 16 Dec 2023: 
+
+It turns out you can unpack even narc files inside the NITRO file system with tinke. as far as i can see this works only 1 layer deep and after unpacking there are still some narcs left. cbarc files are also not unpacked so it might still be usefull to write a tool for unpacking myself.
+
+you can open the unpacked folder just twice or thrice to unpack the nested narcs but this is really annoying
+
+narcs left after unpacking the entire rom with tinke:
+
+./unpacked_rom/mapdata/wldmap/worldmap.narc/worldobject.narc
+./unpacked_rom/mapdata/wldmap/worldmap.narc/worldtex.narc
+./unpacked_rom/flmodel/djinn02.narc/djinn02.narc
+./unpacked_rom/flmodel/f_tprn_arw.narc/f_tprn_arw.narc
+./unpacked_rom/flmodel/chibi_col_04.narc/niru.narc
+
+after unpacking it twice
+
+./unpacked_rom/flmodel/djinn02.narc/djinn02.narc/djinn02.narc
+./unpacked_rom/flmodel/chibi_col_04.narc/niru.narc/niru.narc
+
+cbarcs left after unpacking the entire rom with tinke
+
+All 
+*Also seems like only enemys are stored in cbarc files.. interesting 
