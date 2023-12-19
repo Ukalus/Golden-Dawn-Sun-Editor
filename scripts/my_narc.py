@@ -52,7 +52,7 @@ def unpack_narc(path:str):
         container.file_size = file.read(4)
         container.chunk_size = file.read(2)
         container.no_following_chunks = file.read(2)
-        container.chunk_name = file.rehttp://llref.emutalk.net/docs/?file=xml/narc.xml#xml-docad(2)
+        container.chunk_name = file.read(4)
         container.reserved = file.read(2)
 
         # Note about the File Allocation table: Adresses are probably relative to the entire rom not just the NARC file so it can be ignored
