@@ -136,7 +136,7 @@ class Project():
     
     def run_setup(self):
         if self.system_os == 'Linux':
-            # for now this is disabled because i use Tinke manually instead to unpack the files
+            # comment this function out if you are using tinke
             self.unpack_rom()
             self.format_files()
         else:
