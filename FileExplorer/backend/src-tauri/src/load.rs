@@ -45,19 +45,15 @@ pub fn load_rom(path: &str) -> Romfs {
 }
 
 #[tauri::command]
-pub fn load_fnt(rom_fs: State<Romfs>) -> romFileSystem::MainTable{
+pub fn load_fnt(rom_fs: State<Romfs>) -> romFileSystem::DirectoryTable{
   let fnt_base = 4001792; // fnt offset from header
   let off_subtable = load_bytes(&rom_fs,fnt_base,fnt_base+4);
-  let id_subtable = load_bytes(&rom_fs,fnt_base+4,fnt_base+6);
-  let sub_table_addr = fnt_base+12160;
-  let sub_table_len = rom_fs.data[sub_table_addr+1];
-  romFileSystem::MainTable{
+  let id_first_file = load_bytes(&rom_fs,fnt_base+4,fnt_base+6);
+  let id_parent_dict = load_bytes(&rom_fs,fnt_base+6,fnt_base+8);
+  romFileSystem::DirectoryTable{
     offset_to_subtable: off_subtable,
-    id_first_subtable: id_subtable,
-    sub_table: romFileSystem::SubTable {
-      type_or_length: sub_table_len,
-      file_name: load_bytes::<13>(&rom_fs,sub_table_addr+1,sub_table_addr+14).to_vec(),
-    }
+    id_first_file_subtable: id_first_file,
+    id_parent_directory: id_parent_dict,
   }
 }
 
@@ -67,16 +63,21 @@ fn load_bytes<const N: usize>(rom_fs: &State<Romfs>, start: usize, end: usize) -
   
 }
 
-// fn byte_array_to_address(array: &[u8], rev: bool){
-//   let &mut mut_array = &array;  
-//   if rev {
-//     mut_array.reverse();
-//   }
-//   for n in mut_array {
-//     // some way to make a hex number out of it and then make it into decimal 
-//   }
-// }
-
+#[tauri::command]
+pub fn load_fat(rom_fs: State<Romfs>) -> romFileSystem::FatTable {
+  let fat_offset = 4268544;
+  let file_addresses = romFileSystem::FileAdresses{
+    start_adress : load_bytes(&rom_fs,fat_offset,fat_offset+4),
+    end_adress : load_bytes(&rom_fs,fat_offset+4,fat_offset+8),
+  }; 
+  let file_addresses2 = romFileSystem::FileAdresses{
+    start_adress : load_bytes(&rom_fs,fat_offset+8,fat_offset+12),
+    end_adress : load_bytes(&rom_fs,fat_offset+12,fat_offset+16),
+  };   
+  romFileSystem::FatTable{
+    file_adresses: vec![file_addresses,file_addresses2]
+  }
+}
 
 #[tauri::command]
 pub fn load_meta(rom_fs: State<Romfs>) -> RomMetadata {

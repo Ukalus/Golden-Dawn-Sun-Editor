@@ -5,75 +5,59 @@
 
     
     type FNTData = {
-        id_first_subtable: any[],
         offset_to_subtable: any[],
-        sub_table: {
-            type_or_length: number,
-            file_name: any[],
-        }
-
+        id_first_file_subtable: any[],
+        id_parent_directory: any[],
     }
     
-    $: fnt_data = {} as FNTData;
+    let fnt_data = {} as FNTData;
     async function get_fnt_data(){
         let fnt = invoke('load_fnt');
         fnt.then((data) => {
+            console.log(fnt_data);
             fnt_data = Object(data) as FNTData;
-            console.log(fnt_data)
         })
         ;
     }
     get_fnt_data();
 </script>   
 
-<Heading tag="h3">FNT Table</Heading>
+<Heading tag="h3">Directory Table</Heading>
 
 <Table>
     <TableHead>
-        <TableHeadCell>Key</TableHeadCell>
-        <TableHeadCell>String</TableHeadCell>
-        <TableHeadCell>Raw bytes</TableHeadCell>
+        <TableHeadCell>Offset Subtable</TableHeadCell>
+        <TableHeadCell>ID of first file in Subtable</TableHeadCell>
+        <TableHeadCell>Parent Directory</TableHeadCell>
     </TableHead>
     <TableBody>
-        {#each Object.entries(fnt_data) as [key,value]} 
-                <TableBodyRow>
-                    <TableBodyCell>{key}</TableBodyCell>
-                    <TableBodyCell>
-                        {#if value.constructor === Array}
-                            {#each value as num}
-                                {String.fromCharCode(num)}
-                            {/each}
-                        {:else}
-                            {value}
-                        {/if}
-                    
-                    </TableBodyCell>
-                    <TableBodyCell>
-                        {#if value.constructor === Array}
-                        <P class="font-mono">{getHexValue(value.reverse())}</P>
-                        {/if}
-                    </TableBodyCell>
-                </TableBodyRow>
-
-            {/each}
+        <TableBodyRow>
+            {#if fnt_data}
+            <TableBodyCell>{getHexValue(fnt_data?.offset_to_subtable ?? [])}</TableBodyCell>
+            <TableBodyCell>{getHexValue(fnt_data?.id_first_file_subtable ?? [])}</TableBodyCell>
+            <TableBodyCell>{getHexValue(fnt_data?.id_parent_directory ?? [])}</TableBodyCell>
+            {/if}
+        </TableBodyRow>
     </TableBody>
 </Table>
 
-<Heading tag="h3">Sub-Table</Heading>
+<!-- <Heading tag="h3">First Sub-Table</Heading>
 <TableBody>
     <TableHead>
         <TableHeadCell>Length/Type of Subtable()</TableHeadCell>
         <TableHeadCell>File Name</TableHeadCell>
+        <TableHeadCell>Raw bytes Filename</TableHeadCell>
     </TableHead>
     <TableBody>
         <TableBodyRow>
-            
+            <TableBodyCell>{getHexValue([fnt_data.sub_table?.type_or_length ?? []])}</TableBodyCell>
             <TableBodyCell>
                 {#each Object.values(fnt_data.sub_table?.file_name ?? []) as chara}
                     {String.fromCharCode(chara)}
                 {/each}
             </TableBodyCell>
+            <TableBodyCell>{getHexValue(fnt_data?.sub_table?.file_name ?? []) ?? ""}</TableBodyCell>
         </TableBodyRow>
     </TableBody>
 </TableBody>
-<p>{getHexValue(fnt_data?.sub_table?.file_name ?? []) ?? ""}</p>
+<p></p> -->
