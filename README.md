@@ -1,10 +1,12 @@
 # Golden Sun: Dark Dawn RE
 
-note: This is a mess right now, come back in a few weeks
+Work on a Editor has begun:
+- First goal is viewing all the files look at the README.md inside FileExplorer for more details
+
+
 
 note: Apicula might be responible for some of the messed up models (weird proportions) 
 it could have something todo with the skeleton matrices
-
 
 # Current best way to export the most amount of assets so that one can view / extract them with apicula
 

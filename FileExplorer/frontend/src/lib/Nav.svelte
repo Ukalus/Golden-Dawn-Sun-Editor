@@ -6,10 +6,8 @@
 
 <Navbar class="p-0 m-0">
     <NavUl class="p-0 m-0 [&>*]:p-0 [&>*]:m-0">
-        <NavLi>file</NavLi>
-        <NavLi>edit</NavLi>
-        <NavLi>about</NavLi>
-        <NavLi>help</NavLi>
+        <NavLi href="/META_table">META_TABLE</NavLi>
+        <NavLi href="/FNT_table">FNT_TABLE</NavLi>
     </NavUl>
     
 </Navbar>
