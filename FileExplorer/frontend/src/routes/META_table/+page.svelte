@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { P, Button, Table, TableBody, TableBodyCell, TableBodyRow, Heading, Card, TableHead, TableHeadCell } from "flowbite-svelte";
-    import { getHexValue } from "src/lib/utils";
+    import { Table, TableBody, TableBodyCell, TableBodyRow, Heading, TableHead, TableHeadCell } from "flowbite-svelte";
     import { invoke } from "@tauri-apps/api";
 
     type MetaData = {
-        game_title: any[],
-        game_code: any[],
-        maker_code: any[],
+        game_title: string,
+        game_code: number,
+        maker_code: number,
         unit_code: number,
         encryption_seed_select: number,
         device_capability: number,
@@ -32,22 +31,7 @@
                 {#each Object.entries(metaData) as [key,value]} 
                         <TableBodyRow>
                             <TableBodyCell>{key}</TableBodyCell>
-                            <TableBodyCell>
-                                {#if value.constructor === Array}
-                                    {#each value as num}
-                                        {String.fromCharCode(num)}
-                                    {/each}
-                                {:else}
-                                    {value}
-                                {/if}
-                            </TableBodyCell>
-                            <TableBodyCell>
-                                {#if value.constructor === Array}
-                                    <P class="font-mono">{getHexValue(value.reverse())}</P>
-                            {:else}
-                                {value.toString(16).toUpperCase()}
-                            {/if}
-                            </TableBodyCell>
+                            <TableBodyCell>{value}</TableBodyCell>
                         </TableBodyRow>
 
                     {/each}

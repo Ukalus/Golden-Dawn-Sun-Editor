@@ -1,16 +1,15 @@
 <script lang="ts">
-    import { P, Button, Table, TableBody, TableBodyCell, TableBodyRow, Heading, Card, TableHead, TableHeadCell } from "flowbite-svelte";
-    import { getHexValue } from "src/lib/utils";
+    import { Table, TableBody, TableBodyCell, TableBodyRow, Heading, Card, TableHead, TableHeadCell } from "flowbite-svelte";
     import { invoke } from "@tauri-apps/api";
 
     
     type FATData = {
-        file_adresses: FileAddresses[],
+        file_addresses_list: FileAddresses[],
     }
 
     type FileAddresses = {
-        start_adress: any[],
-        end_adress: any[],
+        start_address: number,
+        end_address: number,
     }
     
     $: fat_data = {} as FATData;
@@ -29,15 +28,17 @@
 
 <Table>
     <TableHead>
+        <TableHeadCell>index</TableHeadCell>
         <TableHeadCell>start_address</TableHeadCell>
         <TableHeadCell>end_address</TableHeadCell>
     </TableHead>
     <TableBody>
-        {#if fat_data.file_adresses}
-            {#each fat_data.file_adresses as file}
+        {#if fat_data && fat_data.file_addresses_list}
+            {#each fat_data.file_addresses_list as file,_}
                 <TableBodyRow>
-                    <TableBodyCell>{getHexValue(file.start_adress.reverse())}</TableBodyCell>
-                    <TableBodyCell>{getHexValue(file.end_adress.reverse())}</TableBodyCell>
+                    <TableBodyCell>{_}</TableBodyCell>
+                    <TableBodyCell class="font-mono">{file.start_address.toString(16)}</TableBodyCell>
+                    <TableBodyCell class="font-mono">{file.end_address.toString(16)}</TableBodyCell>
                 </TableBodyRow>
             {/each}
         {/if}

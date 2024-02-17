@@ -1,13 +1,12 @@
 <script lang="ts">
-    import { P, Button, Table, TableBody, TableBodyCell, TableBodyRow, Heading, Card, TableHead, TableHeadCell } from "flowbite-svelte";
-    import { getHexValue } from "src/lib/utils";
+    import { Table, TableBody, TableBodyCell, TableBodyRow, Heading, Card, TableHead, TableHeadCell } from "flowbite-svelte";
     import { invoke } from "@tauri-apps/api";
 
     
     type FNTData = {
-        offset_to_subtable: any[],
-        id_first_file_subtable: any[],
-        id_parent_directory: any[],
+        offset_to_subtable: number,
+        id_first_file_subtable: number,
+        id_parent_directory: number,
     }
     
     let fnt_data = {} as FNTData;
@@ -33,31 +32,11 @@
     <TableBody>
         <TableBodyRow>
             {#if fnt_data}
-            <TableBodyCell>{getHexValue(fnt_data?.offset_to_subtable ?? [])}</TableBodyCell>
-            <TableBodyCell>{getHexValue(fnt_data?.id_first_file_subtable ?? [])}</TableBodyCell>
-            <TableBodyCell>{getHexValue(fnt_data?.id_parent_directory ?? [])}</TableBodyCell>
+                <TableBodyCell>{fnt_data.offset_to_subtable?.toString(16)}</TableBodyCell>
+                <TableBodyCell>{fnt_data.id_first_file_subtable?.toString(16)}</TableBodyCell>
+                <TableBodyCell>{fnt_data.id_parent_directory?.toString(16)}</TableBodyCell>
             {/if}
         </TableBodyRow>
     </TableBody>
 </Table>
 
-<!-- <Heading tag="h3">First Sub-Table</Heading>
-<TableBody>
-    <TableHead>
-        <TableHeadCell>Length/Type of Subtable()</TableHeadCell>
-        <TableHeadCell>File Name</TableHeadCell>
-        <TableHeadCell>Raw bytes Filename</TableHeadCell>
-    </TableHead>
-    <TableBody>
-        <TableBodyRow>
-            <TableBodyCell>{getHexValue([fnt_data.sub_table?.type_or_length ?? []])}</TableBodyCell>
-            <TableBodyCell>
-                {#each Object.values(fnt_data.sub_table?.file_name ?? []) as chara}
-                    {String.fromCharCode(chara)}
-                {/each}
-            </TableBodyCell>
-            <TableBodyCell>{getHexValue(fnt_data?.sub_table?.file_name ?? []) ?? ""}</TableBodyCell>
-        </TableBodyRow>
-    </TableBody>
-</TableBody>
-<p></p> -->
