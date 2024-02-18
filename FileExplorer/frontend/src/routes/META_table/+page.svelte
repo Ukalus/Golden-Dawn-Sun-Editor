@@ -24,7 +24,7 @@
         <Table>
             <TableHead>
                 <TableHeadCell>Key</TableHeadCell>
-                <TableHeadCell>String</TableHeadCell>
+                <TableHeadCell>Value</TableHeadCell>
                 <TableHeadCell>Raw bytes</TableHeadCell>
             </TableHead>
             <TableBody>
@@ -32,6 +32,7 @@
                         <TableBodyRow>
                             <TableBodyCell>{key}</TableBodyCell>
                             <TableBodyCell>{value}</TableBodyCell>
+                            <TableBodyCell>{value.toString(16)}</TableBodyCell>
                         </TableBodyRow>
 
                     {/each}

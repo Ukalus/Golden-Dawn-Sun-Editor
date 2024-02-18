@@ -39,18 +39,17 @@ pub fn load_fnt(rom_fs: State<Romfs>) -> DirectoryTable{
 #[tauri::command]
 pub fn load_fat(rom_fs: State<Romfs>) -> FatTable {
   // can this be not hardcoded but instead gotten from the file header?
-  let fat_offset: usize = Romfs::load_address(&rom_fs,64).try_into().unwrap();
+  let fat_offset: usize = Romfs::load_address(&rom_fs,64);
   // where do i find out how many files there are exactly?
   let num_of_files: usize = 20;
   let mut file_addresses_list: Vec<FileAddresses> = vec![];
-  for mut i in 0..num_of_files {
+  for mut i in (0..num_of_files*8).step_by(8) {
     let file_addresses = FileAddresses{
       start_address : Romfs::load_address(&rom_fs,fat_offset+i),
       end_address : Romfs::load_address(&rom_fs,fat_offset+i+4),
     };
-    i = i + 4;
     file_addresses_list.push(file_addresses)
-
+    
   };
    
   FatTable{

@@ -21,7 +21,7 @@ impl Romfs {
   // loads a u16 value used in a multitude places across the rom
   pub fn load_word(rom_fs: &State<Romfs>, start: usize) -> u16{
     let val: [u8; 2] = rom_fs.data[start..start+2].try_into().unwrap();
-    u16::from_be_bytes(val)
+    u16::from_le_bytes(val)
   }
    // loads a u32 value used in a multitude places across the rom
    pub fn load_double_word(rom_fs: &State<Romfs>, start: usize) -> u32{

@@ -1,12 +1,13 @@
 <script>
-	import { Card } from 'flowbite-svelte';
 	import '../app.pcss';
 	import Nav from 'src/lib/Nav.svelte';
 </script>
 
 
 <Nav/>
-<Card class="max-w-full h-vh">
-	<slot />
-</Card>
+<div class="w-full h-[100vh] bg-white dark:bg-slate-800">
+	<slot/>
+</div>
+
+
 
