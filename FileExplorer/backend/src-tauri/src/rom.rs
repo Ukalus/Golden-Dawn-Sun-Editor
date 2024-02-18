@@ -10,13 +10,20 @@ pub struct Romfs {
   data: Vec<u8>
 }
 impl Romfs {
-  pub fn load_bytes<const N: usize>(rom_fs: &State<Romfs>, start: usize, end: usize) -> [u8; N ]{
+  pub fn load_bytes(rom_fs: &State<Romfs>, start: usize, end: usize) -> Vec<u8>{
     rom_fs.data[start..end].try_into().unwrap()
+  }
+  pub fn load_byte(rom_fs: &State<Romfs>, offset: usize) -> u8{
+    rom_fs.data[offset].try_into().unwrap()
   }
   // loads a address as a u32, this assumes a address is always 4 bytes in size  
   pub fn load_address(rom_fs: &State<Romfs>, start: usize) -> u32{
     let val: [u8; 4] = rom_fs.data[start..start+4].try_into().unwrap();
     u32::from_le_bytes(val)
+  }
+  pub fn load_address_be(rom_fs: &State<Romfs>, start: usize) -> u32{
+    let val: [u8; 4] = rom_fs.data[start..start+4].try_into().unwrap();
+    u32::from_be_bytes(val)
   }
   // loads a u16 value used in a multitude places across the rom
   pub fn load_word(rom_fs: &State<Romfs>, start: usize) -> u16{
@@ -29,8 +36,8 @@ impl Romfs {
     u32::from_le_bytes(val)
   }
   // loads the game title which is 12 bytes big and the only 12 byte value as far as i know
-  pub fn load_game_title(rom_fs: &State<Romfs>, start: usize) -> String {
-    String::from_utf8(rom_fs.data[start..start+12].to_vec()).expect("couldn't parse game title")
+  pub fn load_string(rom_fs: &State<Romfs>, start: usize, end: usize) -> String {
+    String::from_utf8(rom_fs.data[start..end].to_vec()).expect("couldn't parse string")
     
   }
 }

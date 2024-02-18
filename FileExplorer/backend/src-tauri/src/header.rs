@@ -31,7 +31,7 @@ pub struct RomMetadata {
 #[tauri::command]
 pub fn load_meta(rom_fs: State<Romfs>) -> RomMetadata {
   RomMetadata {
-    game_title: Romfs::load_game_title(&rom_fs,0), 
+    game_title: Romfs::load_string(&rom_fs,0,12), 
     game_code: Romfs::load_double_word(&rom_fs,12),
     maker_code: Romfs::load_word(&rom_fs,14),
 

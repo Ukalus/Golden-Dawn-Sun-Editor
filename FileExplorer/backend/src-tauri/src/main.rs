@@ -9,7 +9,7 @@ mod utils;
 fn main() {
   tauri::Builder::default()
     .manage(rom::load_rom("/home/ukalus/projects/golden_sun_reverse/ROM/Golden (En)SunDarkDawn.nds"))
-    .invoke_handler(tauri::generate_handler![header::load_meta,file_system::load_fnt,file_system::load_fat])
+    .invoke_handler(tauri::generate_handler![header::load_meta,file_system::load_fnt,file_system::load_fat,file_system::load_sub_tables])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
