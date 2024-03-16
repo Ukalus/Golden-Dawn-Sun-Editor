@@ -10,6 +10,10 @@ const config = {
   
 	theme: {
 	  extend: {
+		gridTemplateColumns: {
+			// Simple 32 column grid
+			'32': 'repeat(32, minmax(0, 1fr))',
+		},
 		colors: {
 		  // flowbite-svelte
 		  primary: {
