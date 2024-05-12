@@ -4,9 +4,11 @@
 
     
     type FNTData = {
-        offset_to_subtable: number,
-        id_first_file_subtable: number,
-        id_parent_directory: number,
+        directory_table_entries: {
+            offset_to_subtable: number,
+            id_first_file_subtable: number,
+            id_parent_directory: number,
+        },
     }
     
     let fnt_data = {} as FNTData;
@@ -30,13 +32,16 @@
         <TableHeadCell>Parent Directory</TableHeadCell>
     </TableHead>
     <TableBody>
-        <TableBodyRow>
-            {#if fnt_data}
-                <TableBodyCell>{fnt_data.offset_to_subtable?.toString(16)}</TableBodyCell>
-                <TableBodyCell>{fnt_data.id_first_file_subtable?.toString(16)}</TableBodyCell>
-                <TableBodyCell>{fnt_data.id_parent_directory?.toString(16)}</TableBodyCell>
-            {/if}
-        </TableBodyRow>
+        {#if fnt_data && fnt_data.directory_table_entries}
+            {#each fnt_data.directory_table_entries.slice(0,30) as fnt}
+            
+            <TableBodyRow>
+                <TableBodyCell>{fnt.offset_to_subtable?.toString(16)}</TableBodyCell>
+                <TableBodyCell>{fnt.id_first_file_subtable?.toString(16)}</TableBodyCell>
+                <TableBodyCell>{fnt.id_parent_directory?.toString(16)}</TableBodyCell>
+            </TableBodyRow>
+            {/each}
+        {/if}
     </TableBody>
 </Table>
 

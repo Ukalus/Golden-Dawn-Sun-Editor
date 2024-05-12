@@ -1,35 +1,73 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { invoke } from '@tauri-apps/api';
-    import { P, Toggle } from 'flowbite-svelte';
+    import { Button, P, Toggle } from 'flowbite-svelte';
+	import { onMount } from 'svelte';
     
     $: fileArray = [];
     async function get_fnt_data(){
-        let file = invoke('load_file',{start: parseInt($page.params.start_address), end: parseInt($page.params.start_address)+1200});
+        let file = invoke('load_file',{start: parseInt($page.params.start_address), end: parseInt($page.params.end_address)});
         file.then((data) => { 
             fileArray = Object(data);
         })
         ;
     }
     get_fnt_data();
+    // Intersection Observer API
+    $: index = 0;
+    $: chunkSize = 800;
+    $: viewArr = fileArray.slice(0,index+chunkSize);
+    onMount(() => {
+        
+        let options = {
+        root: null,
+        rootMargin: "0px",
+        threshold: 1.0,
+       
+        };
+        let target = document.querySelector("#showMore");
+        console.log(target);
+        if(target){
+            let callback = (entries, observer) => {
+            entries.forEach((entry) => {
+                if(entry.isIntersecting) {
+                    console.log("INTERSECTION")
+                    index = index + chunkSize;
+                }
+            });
+            };
+            let observer = new IntersectionObserver(callback, options);
+            observer.observe(target);
+           
+        }
+    })
+   
     let switchMode = true;
+    function saveToPC(){
+        console.log("saving")
+        
+    }
+
 </script>
 
 <div>
-    {$page.url.pathname}
-    {JSON.stringify($page.params.start_address)}
-    {JSON.stringify($page.params.end_address)}
-    <Toggle bind:checked={switchMode}>String</Toggle>
+    <p>pathname: {$page.url.pathname}</p>
+    <p>startadress: {$page.params.start_address}</p>
+    <p>endadress: {$page.params.end_address}</p>
+    <p>total size: {parseInt($page.params.end_address) - parseInt($page.params.start_address) }</p>
+    <Button on:click={saveToPC}>Save file to...</Button>
+    <Toggle bind:checked={switchMode}>String (WIP, dont use on large files)</Toggle>
     <div class="grid grid-cols-32">
         {#if switchMode}
-            {#each fileArray as byteNum}
+            {#each viewArr as byteNum}
                 <P class="m-full text-gray-400">{byteNum.toString(16)}</P>
             {/each}
         {:else}
     
-            {#each fileArray as byteNum}
+            {#each viewArr as byteNum}
                 <P class="m-full">{String.fromCharCode(byteNum)}</P>
             {/each}
         {/if}
+        <div id="showMore"></div>
     </div>
 </div>

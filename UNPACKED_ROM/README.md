@@ -1,0 +1,1 @@
+This folder is supposed to contain the unpacked assets to use for whatever purpose you like
