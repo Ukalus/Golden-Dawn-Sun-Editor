@@ -4,23 +4,30 @@
 
     
     type FNTData = {
-        directory_table_entries: {
-            offset_to_subtable: number,
-            id_first_file_subtable: number,
-            id_parent_directory: number,
-        },
+        entry_type: any,
+        offset_to_subtable: number,
+        id_first_file: number,
+        id_parent_directory: number,
+        next_entry: subEntry,
+    }
+
+    type subEntry = {
+        length: number,
+        name: Array<number>,
+        sub_directory_id: number,
     }
     
-    let fnt_data = {} as FNTData;
+    let fnt_data = [] as FNTData[];
     async function get_fnt_data(){
         let fnt = invoke('load_fnt');
         fnt.then((data) => {
             console.log(fnt_data);
-            fnt_data = Object(data) as FNTData;
+            fnt_data = Object(data) as any;
         })
         ;
     }
     get_fnt_data();
+    $: console.log(fnt_data)
 </script>   
 
 <Heading tag="h3">Directory Table</Heading>
@@ -30,15 +37,27 @@
         <TableHeadCell>Offset Subtable</TableHeadCell>
         <TableHeadCell>ID of first file in Subtable</TableHeadCell>
         <TableHeadCell>Parent Directory</TableHeadCell>
+        <TableBodyCell>Entry Type</TableBodyCell>
+        <TableBodyCell>Subtable Length</TableBodyCell>
+        <TableBodyCell>SubTable data</TableBodyCell>
+        <TableBodyCell>Subtable id</TableBodyCell>
     </TableHead>
     <TableBody>
-        {#if fnt_data && fnt_data.directory_table_entries}
-            {#each fnt_data.directory_table_entries.slice(0,30) as fnt}
-            
+        {#if fnt_data}
+            {#each fnt_data as entry}
             <TableBodyRow>
-                <TableBodyCell>{fnt.offset_to_subtable?.toString(16)}</TableBodyCell>
-                <TableBodyCell>{fnt.id_first_file_subtable?.toString(16)}</TableBodyCell>
-                <TableBodyCell>{fnt.id_parent_directory?.toString(16)}</TableBodyCell>
+                <TableBodyCell>{entry.offset_to_subtable?.toString(16)}</TableBodyCell>
+                <TableBodyCell>{entry.id_first_file}</TableBodyCell>
+                <TableBodyCell>{entry.id_parent_directory?.toString(16)}</TableBodyCell>
+                <TableBodyCell>{entry.entry_type}</TableBodyCell>
+                {#if entry.next_entry}
+                <TableBodyCell>  {entry.next_entry.length}</TableBodyCell>
+                <TableBodyCell>  {entry.next_entry.name.map((number) => String.fromCharCode(number)).join("")}</TableBodyCell>
+                <TableBodyCell>  {entry.next_entry.sub_directory_id}</TableBodyCell>
+
+                   
+                
+                {/if}
             </TableBodyRow>
             {/each}
         {/if}

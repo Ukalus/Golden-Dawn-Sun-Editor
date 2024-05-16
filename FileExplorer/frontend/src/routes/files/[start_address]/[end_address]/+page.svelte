@@ -4,6 +4,7 @@
     import { Button, P, Toggle } from 'flowbite-svelte';
 	import { onMount } from 'svelte';
     
+    let hexEditorOpen: boolean = false;
     $: fileArray = [];
     async function get_fnt_data(){
         let file = invoke('load_file',{start: parseInt($page.params.start_address), end: parseInt($page.params.end_address)});
@@ -51,23 +52,29 @@
 </script>
 
 <div>
-    <p>pathname: {$page.url.pathname}</p>
-    <p>startadress: {$page.params.start_address}</p>
-    <p>endadress: {$page.params.end_address}</p>
-    <p>total size: {parseInt($page.params.end_address) - parseInt($page.params.start_address) }</p>
-    <Button on:click={saveToPC}>Save file to...</Button>
-    <Toggle bind:checked={switchMode}>String (WIP, dont use on large files)</Toggle>
-    <div class="grid grid-cols-32">
-        {#if switchMode}
-            {#each viewArr as byteNum}
-                <P class="m-full text-gray-400">{byteNum.toString(16)}</P>
-            {/each}
-        {:else}
-    
-            {#each viewArr as byteNum}
-                <P class="m-full">{String.fromCharCode(byteNum)}</P>
-            {/each}
-        {/if}
-        <div id="showMore"></div>
+    <div class="grid grid-cols-4">
+        <p>pathname: {$page.url.pathname}</p>
+        <p>startadress: {$page.params.start_address}</p>
+        <p>endadress: {$page.params.end_address}</p>
+        <p>total size: {parseInt($page.params.end_address) - parseInt($page.params.start_address) }</p>
     </div>
+    
+    <Button on:click={saveToPC}>Save file to...</Button>
+    <Button on:click={() => hexEditorOpen =!hexEditorOpen}>Open Hexeditor</Button>
+    {#if hexEditorOpen}
+        <Toggle bind:checked={switchMode}>String (WIP, dont use on large files)</Toggle>
+        <div class="grid grid-cols-32">
+            {#if switchMode}
+                {#each viewArr as byteNum}
+                    <P class="m-full text-gray-400">{byteNum.toString(16)}</P>
+                {/each}
+            {:else}
+        
+                {#each viewArr as byteNum}
+                    <P class="m-full">{String.fromCharCode(byteNum)}</P>
+                {/each}
+            {/if}
+            <div id="showMore"></div>
+        </div>
+    {/if}
 </div>

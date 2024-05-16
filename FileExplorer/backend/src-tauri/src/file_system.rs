@@ -5,7 +5,6 @@
 
 use serde::{Deserialize, Serialize};
 use tauri::State;
-use tauri::Manager;
 use crate::rom::Romfs;
 
 
@@ -22,47 +21,72 @@ pub struct FileAddresses {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct DirectoryTable {
-   pub directory_table_entries: Vec<DirectoryTableEntry>
+pub enum FntEntryType {
+  File,
+  Root,
+  SubDirectory,
 }
 
-#[derive(Serialize,Deserialize)]
-pub struct DirectoryTableEntry {
-  pub offset_to_subtable: u32,
-  pub id_first_file_subtable: u16,
-   // id_parent_directory is actually the total number of directories for the first entry 
-  pub id_parent_directory: u16,
-}
-
-#[derive(Serialize,Deserialize)]
-pub struct SubTableDirectory {
-  pub entries: Vec<SubTableEntry>,
+#[derive(Serialize, Deserialize)]
+pub struct FntEntry {
+  entry_type: FntEntryType,
+  offset_to_subtable: u32,
+  id_first_file: u16,
+  // first entry is total number of directories
+  id_parent_directory: u16,
+  next_entry: SubTable,
   
 }
-#[derive(Serialize,Deserialize)]
-pub struct SubTableEntry {
-  pub length: u8,
-  pub name: String, 
-}
 
+#[derive(Serialize, Deserialize)]
+pub struct SubTable {
+  length: usize,
+  name: Vec<u8>,
+  sub_directory_id: u8,
+}
 
 #[tauri::command]
-pub fn load_fnt(rom_fs: State<Romfs>) -> DirectoryTable{
-  let fnt_base = 4001792; // fnt offset from header
-  
-  let num_of_entries: usize = 500;
-  let mut entries: Vec<DirectoryTableEntry> = vec![];
-  for i in (0..num_of_entries*8).step_by(8){
-    let tab_entry = DirectoryTableEntry{
-      offset_to_subtable : Romfs::load_address(&rom_fs,fnt_base+i),
-      id_first_file_subtable : Romfs::load_word(&rom_fs,fnt_base+i+4),
-      id_parent_directory : Romfs::load_word(&rom_fs,fnt_base+i+6),
+pub fn load_fnt(rom_fs: State<Romfs>) -> Vec<FntEntry>{
+  // Read first entry because its a bit different than the others
+  let fnt_base: usize = 4001792;
+  let number_of_directories: usize = Romfs::load_word(&rom_fs,fnt_base+6).try_into().unwrap();
+  let main_directory: Vec<u8> = Romfs::load_bytes(&rom_fs,fnt_base,fnt_base+(number_of_directories*6));
+
+  let mut entries: Vec<FntEntry> = vec![];
+  for byte_entry in main_directory.chunks_exact(8){
+
+    
+    let offset_to_subtable = u32::from_le_bytes(byte_entry[0..4].try_into().unwrap());
+    
+    let subtable_length: usize = usize::try_from(Romfs::load_byte(&rom_fs,fnt_base+usize::try_from(offset_to_subtable).unwrap())).unwrap();
+    let subtable_data_offset: usize = fnt_base + usize::try_from(offset_to_subtable).unwrap();
+    let subtable_id_offset: usize = fnt_base + subtable_length + usize::try_from(offset_to_subtable).unwrap();
+    
+
+    let subtable_name: Vec<u8> = Romfs::load_bytes(&rom_fs,subtable_data_offset, subtable_data_offset + subtable_length + 1);
+    let subtable_id: u8 = Romfs::load_byte(&rom_fs,subtable_id_offset);
+    let subTable = SubTable {
+      length: subtable_length,
+      name: subtable_name,
+      sub_directory_id:subtable_id,
     };
-    entries.push(tab_entry);
+    let entry = FntEntry {
+      entry_type: FntEntryType::Root,
+      offset_to_subtable: offset_to_subtable,
+      id_first_file: u16::from_le_bytes(byte_entry[4..6].try_into().unwrap()),
+      id_parent_directory:  u16::from_le_bytes(byte_entry[6..8].try_into().unwrap()),
+      next_entry: subTable,
+    };
+
+    entries.push(entry);
+
   }
-  DirectoryTable{
-    directory_table_entries: entries,
-  }
+
+  return entries
+  
+
+  
+  // Read the rest of the entries, do this recursively until you get to an actual file
 }
 
 #[tauri::command]
@@ -90,30 +114,5 @@ pub fn load_fat(rom_fs: State<Romfs>) -> FatTable {
 #[tauri::command]
 pub fn load_file(rom_fs: State<Romfs>,start: usize, end: usize) -> Vec<u8> {
   Romfs::load_bytes(&rom_fs,start,end).try_into().unwrap()
-}
-
-#[tauri::command]
-pub fn load_sub_tables(app: tauri::AppHandle) -> SubTableDirectory {
-  
-  let rom_fs: State<Romfs> = app.state::<Romfs>();
-  let file_name_table_offset: usize = Romfs::load_address(&rom_fs,64).try_into().unwrap();
-  // HELP, this line is cloning the entire rom filestream -> this should not happen
-  let directory_table: DirectoryTable = load_fnt(rom_fs.clone());
-  let mut entries: Vec<SubTableEntry> = vec![];
-  for entry in directory_table.directory_table_entries {
-    let offset_to_subtable: usize = entry.offset_to_subtable.try_into().unwrap();
-    let length_and_type: u8 = Romfs::load_byte(&rom_fs.clone(), file_name_table_offset + offset_to_subtable);
-
-    let entry = SubTableEntry {
-      length: length_and_type,
-      name: "test.bin".to_string(),
-    };
-    entries.push(entry);
-  };
-
-  SubTableDirectory{
-    entries: entries,
-
-  }
 }
 
