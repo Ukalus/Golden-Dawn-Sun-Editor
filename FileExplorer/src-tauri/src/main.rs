@@ -13,7 +13,8 @@ fn main() {
       header::load_meta,
       file_system::load_fat,
       file_system::load_file,
-      file_system::load_fnt,
+      file_system::load_main_table,
+      file_system::load_directory,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

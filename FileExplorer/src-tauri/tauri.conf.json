@@ -1,9 +1,9 @@
 {
   "build": {
-    "beforeBuildCommand": "npm run --prefix ../frontend build",
-    "beforeDevCommand": "npm run --prefix ../frontend dev",
+    "beforeBuildCommand": "npm run --prefix ./frontend build",
+    "beforeDevCommand": "npm run --prefix ./frontend dev",
     "devPath": "http://localhost:5173",
-    "distDir": "../frontend/build"
+    "distDir": "./frontend/build"
   },
   "package": {
     "productName": "gsdd-backend",
