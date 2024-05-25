@@ -5,20 +5,17 @@
 	import { onMount } from "svelte";
 
     
-    type FATData = {
-        file_addresses_list: FileAddresses[],
-    }
 
-    type FileAddresses = {
+    type FatEntry = {
         start_address: number,
         end_address: number,
     }
     
-    $: fat_data = {} as FATData;
+    $: fat_data = [] as FatEntry[];
     async function get_fat_data(){
-        let fat = invoke('load_fat');
+        let fat = invoke('load_fat_entries');
         fat.then((data) => { 
-            fat_data = Object(data) as FATData;
+            fat_data = data as FatEntry[];
             console.log(fat_data)
         })
         ;
@@ -26,7 +23,6 @@
     get_fat_data();
     $: index = 0;
     let chunkSize = 30;
-    $: showArray = [];
    
     onMount(() => {
         
@@ -58,8 +54,8 @@
 </script>   
 
 <Heading tag="h3">FAT Table</Heading>
-{#if fat_data && fat_data.file_addresses_list}
-<div>Number of entries:{fat_data.file_addresses_list.length}</div>
+{#if fat_data }
+<div>Number of entries:{fat_data.length}</div>
 {/if}
 <Table>
     <TableHead>
@@ -69,8 +65,8 @@
     </TableHead>
    
     <TableBody >
-        {#if index && fat_data && fat_data.file_addresses_list}
-            {#each fat_data.file_addresses_list.slice(0,index+chunkSize) as fat,i}
+        {#if index && fat_data}
+            {#each fat_data.slice(0,index+chunkSize) as fat,i}
                 <TableBodyRow on:click={async () => goto(`/files/${fat.start_address}/${fat.end_address}`)}>
                     <TableBodyCell>{i}</TableBodyCell>
                     <TableBodyCell class="font-mono">{fat.start_address.toString(16)}</TableBodyCell>

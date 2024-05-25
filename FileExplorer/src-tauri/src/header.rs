@@ -1,6 +1,6 @@
+use crate::rom::Romfs;
 use serde::{Deserialize, Serialize};
 use tauri::State;
-use crate::rom::Romfs;
 
 #[derive(Serialize, Deserialize)]
 pub struct RomMetadata {
@@ -30,17 +30,17 @@ pub struct RomMetadata {
 
 #[tauri::command]
 pub fn load_meta(rom_fs: State<Romfs>) -> RomMetadata {
-  RomMetadata {
-    game_title: Romfs::load_string(&rom_fs,0,12), 
-    game_code: Romfs::load_double_word(&rom_fs,12),
-    maker_code: Romfs::load_word(&rom_fs,14),
+    RomMetadata {
+        game_title: Romfs::load_string(&rom_fs, 0, 12),
+        game_code: Romfs::load_double_word(&rom_fs, 12),
+        maker_code: Romfs::load_word(&rom_fs, 14),
 
-    arm9_offset: Romfs::load_double_word(&rom_fs,32),
-    arm7_offset: Romfs::load_double_word(&rom_fs,48),
+        arm9_offset: Romfs::load_double_word(&rom_fs, 32),
+        arm7_offset: Romfs::load_double_word(&rom_fs, 48),
 
-    file_name_table_offset: Romfs::load_double_word(&rom_fs,64),
-    file_name_table_size: Romfs::load_double_word(&rom_fs,68),
-    file_allocation_table_offset: Romfs::load_double_word(&rom_fs,72),
-    file_allocation_table_size: Romfs::load_double_word(&rom_fs,76),
-  }
+        file_name_table_offset: Romfs::load_double_word(&rom_fs, 64),
+        file_name_table_size: Romfs::load_double_word(&rom_fs, 68),
+        file_allocation_table_offset: Romfs::load_double_word(&rom_fs, 72),
+        file_allocation_table_size: Romfs::load_double_word(&rom_fs, 76),
+    }
 }

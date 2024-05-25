@@ -7,7 +7,7 @@
     let hexEditorOpen: boolean = false;
     $: fileArray = [];
     async function get_fnt_data(){
-        let file = invoke('load_file',{start: parseInt($page.params.start_address), end: parseInt($page.params.end_address)});
+        let file = invoke('load_file_content',{start: parseInt($page.params.start_address), end: parseInt($page.params.end_address)});
         file.then((data) => { 
             fileArray = Object(data);
         })
@@ -16,7 +16,7 @@
     get_fnt_data();
     // Intersection Observer API
     $: index = 0;
-    $: chunkSize = 800;
+    $: chunkSize = 1600;
     $: viewArr = fileArray.slice(0,index+chunkSize);
     onMount(() => {
         
@@ -46,7 +46,6 @@
     let switchMode = true;
     function saveToPC(){
         console.log("saving")
-        
     }
 
 </script>
@@ -61,7 +60,7 @@
     
     <Button on:click={saveToPC}>Save file to...</Button>
     <Button on:click={() => hexEditorOpen =!hexEditorOpen}>Open Hexeditor</Button>
-    {#if hexEditorOpen}
+    
         <Toggle bind:checked={switchMode}>String (WIP, dont use on large files)</Toggle>
         <div class="grid grid-cols-32">
             {#if switchMode}
@@ -74,7 +73,6 @@
                     <P class="m-full">{String.fromCharCode(byteNum)}</P>
                 {/each}
             {/if}
-            <div id="showMore"></div>
+            <div id="showMore" class="showMore">asdasdasd</div>
         </div>
-    {/if}
 </div>
