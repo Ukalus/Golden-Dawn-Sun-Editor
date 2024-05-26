@@ -30,20 +30,31 @@
 
 
 <Table>
-    <TableHead>
-        <TableHeadCell>length</TableHeadCell>
-        <TableHeadCell>name</TableHeadCell>
-        <TableHeadCell>sub id</TableHeadCell>
-    </TableHead>
+    
     <TableBody>
         {#each entries as entry}
-        <TableBodyRow>
-            <TableBodyCell>{entry.name_length}</TableBodyCell>
-            <TableBodyCell>{entry.name.map((number) => String.fromCharCode(number)).join("")}</TableBodyCell>
-            <TableBodyCell>{entry.sub_directory_id}</TableBodyCell>
-
+       
+            {#if entry.Main}
+            <TableBodyRow class="dark:bg-green-900">
+                <TableBodyCell>{entry.Main.id_first_file}</TableBodyCell>
+                <TableBodyCell>{entry.Main.id_parent_directory}</TableBodyCell>
+                <TableBodyCell>{entry.Main.offset_to_subtable}</TableBodyCell>
+            </TableBodyRow>
+            {:else if entry.Sub && entry.Sub.sub_directory_id}
+            <TableBodyRow class="dark:bg-violet-900">
+                <TableBodyCell>{entry.Sub.name_length}</TableBodyCell>
+                <TableBodyCell>{entry.Sub.name.map((number) => String.fromCharCode(number)).join("")}</TableBodyCell>
+                <TableBodyCell>{entry.Sub.sub_directory_id}</TableBodyCell>
+            </TableBodyRow>
+            {:else if entry.Sub }
+            <TableBodyRow class="dark:bg-rose-900">
+                <TableBodyCell>{entry.Sub.name_length}</TableBodyCell>
+                <TableBodyCell>{entry.Sub.name.map((number) => String.fromCharCode(number)).join("")}</TableBodyCell>
+                <TableBodyCell>{entry.Sub.sub_directory_id}</TableBodyCell>
+            </TableBodyRow>
+            {/if}
             
-        </TableBodyRow>
+        
         {/each}
     </TableBody>
 </Table>
