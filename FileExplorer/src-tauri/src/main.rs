@@ -12,7 +12,6 @@ fn main() {
     .invoke_handler(tauri::generate_handler![
       header::load_meta,
       file_system::load_fat_entries,
-      file_system::load_main_table,
       file_system::load_directory,
       file_system::load_file_content,
 

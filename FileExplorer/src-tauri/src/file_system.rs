@@ -1,138 +1,136 @@
+use std::str::from_utf8;
+
 use crate::rom::Romfs;
 use serde::{Deserialize, Serialize};
-use serde_json::map::Entry;
 use tauri::State;
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+
+pub enum SubTableType {
+    File(File),
+    Directory(Directory),
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+
+pub struct File {
+    length: usize,
+    name: String,
+    id: u16,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+
+pub struct Directory {
+    length: usize,
+    name: String,
+    sub_directory_id: Option<u16>,
+}
 #[derive(Serialize, Deserialize)]
 pub struct FatEntry {
     pub start_address: u32,
     pub end_address: u32,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-pub enum SubTableType {
-    File,
-    SubDirectory,
-}
-
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct MainTableEntry {
     offset_to_subtable: usize,
     id_first_file: u16,
     // first entry is total number of directories
     id_parent_directory: u16,
+    sub_table_entries: Vec<SubTableType>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+impl MainTableEntry {
+    pub fn new(rom_fs: &State<Romfs>) -> Self{
+        let fnt_base: usize = 4001792;
+        let byte_entry: Vec<u8> = Romfs::load_bytes(&rom_fs, fnt_base, fnt_base + 8);
+    
+        let mut new = MainTableEntry{
+            offset_to_subtable: u32::from_le_bytes(byte_entry[0..4].try_into().unwrap())
+                .try_into()
+                .unwrap(),
+            id_first_file: u16::from_le_bytes(byte_entry[4..6].try_into().unwrap()),
+            id_parent_directory: u16::from_le_bytes(byte_entry[6..8].try_into().unwrap()),
+            sub_table_entries: vec![],
+        };
+        MainTableEntry::load_sub_entries(&rom_fs, &mut new);
+        new 
+    }
+    pub fn load_sub_entries(rom_fs: &State<Romfs>, new: &mut MainTableEntry){
+        let mut offset = 0;
+        let fnt_base: usize = 4001792;
+        let mut file_index: u16 = new.id_first_file - 1; 
+        loop {
+            
+            let name_length: usize = Romfs::load_byte(
+                rom_fs,
+                fnt_base + new.offset_to_subtable + offset,
+            );
+        
+            println!("name_length: {:?}", name_length);
+        
+            if name_length > 128 {
+        
+                let name: Vec<u8> = Romfs::load_bytes(
+                    rom_fs,
+                    fnt_base + new.offset_to_subtable + 1 + offset.clone(),
+                    fnt_base + new.offset_to_subtable + name_length - 128 + 1 + offset,
+                );
+
+                let name: String = String::from_utf8(name).unwrap();
+                offset = offset + name_length - 128 + 1 + 2;
+                let entry = Directory {
+                    length: name_length - 128,
+                    name: name,
+                    sub_directory_id: Some(Romfs::load_word(
+                        rom_fs,
+                        fnt_base + new.offset_to_subtable + name_length - 128,
+                    )),
+                };
+                new.sub_table_entries.push(SubTableType::Directory(entry));
+                
+            } else if name_length != 0{
+                let name: Vec<u8> = Romfs::load_bytes(
+                    rom_fs,
+                    fnt_base + new.offset_to_subtable + 1 + offset.clone(),
+                    fnt_base + new.offset_to_subtable + name_length + 1 + offset.clone(),
+                );
+
+                let name: String = String::from_utf8(name).unwrap();
+                offset = offset + name_length + 1;
+                file_index += 1;
+                let entry = File {
+                    length: name_length,
+                    name: name,
+                    id: file_index,
+                };
+                new.sub_table_entries.push(SubTableType::File(entry));
+            } else {
+                break
+            }
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct SubTableEntry {
     name_length: usize,
     name: Vec<u8>,
     sub_directory_id: Option<u16>,
-    sub_table_entry_type: SubTableType,
 }
 
+
+
 #[derive(Serialize, Deserialize)]
-pub enum PathElements {
+pub enum TableElements {
     Main(MainTableEntry),
     Sub(SubTableEntry),
 }
 
 #[tauri::command]
-pub fn load_main_table(rom_fs: State<Romfs>) -> Vec<MainTableEntry> {
-    let fnt_base: usize = 4001792;
-    let number_of_directories: usize = Romfs::load_word(&rom_fs, fnt_base + 6).try_into().unwrap();
-    let main_directory: Vec<u8> =
-        Romfs::load_bytes(&rom_fs, fnt_base, fnt_base + (number_of_directories * 8));
-
-    let mut entries: Vec<MainTableEntry> = vec![];
-    for byte_entry in main_directory.chunks_exact(8) {
-        let entry = MainTableEntry {
-            offset_to_subtable: usize::from_le_bytes(byte_entry[0..4].try_into().unwrap()),
-            id_first_file: u16::from_le_bytes(byte_entry[4..6].try_into().unwrap()),
-            id_parent_directory: u16::from_le_bytes(byte_entry[6..8].try_into().unwrap()),
-        };
-        entries.push(entry);
-    }
-    return entries;
-}
-
-pub fn load_main_table_entry(rom_fs: &State<Romfs>, offset: usize) -> MainTableEntry {
-    let fnt_base: usize = 4001792;
-    let byte_entry: Vec<u8> = Romfs::load_bytes(&rom_fs, fnt_base, fnt_base + offset);
-
-    MainTableEntry {
-        offset_to_subtable: u32::from_le_bytes(byte_entry[0..4].try_into().unwrap())
-            .try_into()
-            .unwrap(),
-        id_first_file: u16::from_le_bytes(byte_entry[4..6].try_into().unwrap()),
-        id_parent_directory: u16::from_le_bytes(byte_entry[6..8].try_into().unwrap()),
-    }
-}
-
-pub fn load_sub_table_entry(
-    rom_fs: &State<Romfs>,
-    main_directory_entry: MainTableEntry,
-    offset: &mut usize,
-) -> SubTableEntry {
-    let fnt_base: usize = 4001792;
-    let mut list: Vec<SubTableEntry> = vec![];
-
-    let name_length: usize = Romfs::load_byte(
-        rom_fs,
-        fnt_base + main_directory_entry.offset_to_subtable + offset.clone(),
-    );
-
-    println!("name_length: {:?}", name_length);
-
-    if name_length > 128 {
-
-        let name: Vec<u8> = Romfs::load_bytes(
-            rom_fs,
-            fnt_base + main_directory_entry.offset_to_subtable + 1 + offset.clone(),
-            fnt_base + main_directory_entry.offset_to_subtable + name_length - 128 + 1 + offset.clone(),
-        );
-        *offset = *offset + name_length - 128 + 1 + 2;
-        SubTableEntry {
-            name_length: name_length - 128,
-            name: name,
-            sub_directory_id: Some(Romfs::load_word(
-                rom_fs,
-                fnt_base + main_directory_entry.offset_to_subtable + name_length - 128,
-            )),
-            sub_table_entry_type: SubTableType::SubDirectory,
-        }
-    } else {
-        let name: Vec<u8> = Romfs::load_bytes(
-            rom_fs,
-            fnt_base + main_directory_entry.offset_to_subtable + 1 + offset.clone(),
-            fnt_base + main_directory_entry.offset_to_subtable + name_length + 1 + offset.clone(),
-        );
-        *offset = *offset + name_length + 1;
-        SubTableEntry {
-            name_length: name_length,
-            name: name,
-            sub_directory_id: None,
-            sub_table_entry_type: SubTableType::File
-        }
-    }
-}
-
-#[tauri::command]
-pub fn load_directory(rom_fs: State<Romfs>) -> Vec<PathElements> {
-    
-    let mut directory: Vec<PathElements> = vec![];
-    let mut offset = 0;
-
-    let first_main_entry = load_main_table_entry(&rom_fs,8);
-    directory.push(PathElements::Main(first_main_entry.clone()));
-    loop {
-        let entry = load_sub_table_entry(&rom_fs, first_main_entry.clone(), &mut offset);
-        if entry.name_length == 0 {
-           break
-        }
-        directory.push(PathElements::Sub(entry));
-    }
-    directory
+pub fn load_directory(rom_fs: State<Romfs>) -> MainTableEntry {
+    MainTableEntry::new(&rom_fs)
 }
 
 #[tauri::command]
