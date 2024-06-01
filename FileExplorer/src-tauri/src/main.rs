@@ -13,8 +13,8 @@ fn main() {
       header::load_meta,
       file_system::load_fat_entries,
       file_system::load_directory,
+      file_system::write_file_to_system,
       file_system::load_file_content,
-
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

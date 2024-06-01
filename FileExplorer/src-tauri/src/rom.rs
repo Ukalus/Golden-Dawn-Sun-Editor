@@ -7,7 +7,7 @@ use tauri::State;
 
 #[derive(Serialize, Deserialize)]
 pub struct Romfs {
-    data: Vec<u8>,
+    pub data: Vec<u8>,
 }
 impl Romfs {
     pub fn load_bytes(rom_fs: &State<Romfs>, start: usize, end: usize) -> Vec<u8> {

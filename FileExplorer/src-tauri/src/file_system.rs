@@ -1,27 +1,32 @@
-use std::str::from_utf8;
 
 use crate::rom::Romfs;
 use serde::{Deserialize, Serialize};
 use tauri::State;
+use std::fs::File;
+use std::io::Write; // bring trait into scope
+use std::fs;
+use std::env;
+use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 
 pub enum SubTableType {
-    File(File),
-    Directory(Directory),
+    NDSFile(NDSFile),
+    NDSDirectory(NDSDirectory),
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 
-pub struct File {
+pub struct NDSFile {
     length: usize,
     name: String,
     id: u16,
+    file_data: Vec<u8>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 
-pub struct Directory {
+pub struct NDSDirectory {
     length: usize,
     name: String,
     sub_directory_id: Option<u16>,
@@ -42,9 +47,9 @@ pub struct MainTableEntry {
 }
 
 impl MainTableEntry {
-    pub fn new(rom_fs: &State<Romfs>) -> Self{
+    pub fn new(rom_fs: &State<Romfs>, offset: usize) -> Self{
         let fnt_base: usize = 4001792;
-        let byte_entry: Vec<u8> = Romfs::load_bytes(&rom_fs, fnt_base, fnt_base + 8);
+        let byte_entry: Vec<u8> = Romfs::load_bytes(&rom_fs, fnt_base + 8*offset, fnt_base + 8*offset + 8);
     
         let mut new = MainTableEntry{
             offset_to_subtable: u32::from_le_bytes(byte_entry[0..4].try_into().unwrap())
@@ -80,7 +85,7 @@ impl MainTableEntry {
 
                 let name: String = String::from_utf8(name).unwrap();
                 offset = offset + name_length - 128 + 1 + 2;
-                let entry = Directory {
+                let entry = NDSDirectory {
                     length: name_length - 128,
                     name: name,
                     sub_directory_id: Some(Romfs::load_word(
@@ -88,7 +93,7 @@ impl MainTableEntry {
                         fnt_base + new.offset_to_subtable + name_length - 128,
                     )),
                 };
-                new.sub_table_entries.push(SubTableType::Directory(entry));
+                new.sub_table_entries.push(SubTableType::NDSDirectory(entry));
                 
             } else if name_length != 0{
                 let name: Vec<u8> = Romfs::load_bytes(
@@ -99,13 +104,33 @@ impl MainTableEntry {
 
                 let name: String = String::from_utf8(name).unwrap();
                 offset = offset + name_length + 1;
+
+                
+
+                // 
+                let fat_offset: usize = Romfs::load_address(&rom_fs, 72).try_into().unwrap();
+                let fat_size: usize = Romfs::load_address(&rom_fs, 76).try_into().unwrap();
+                let fat_list: Vec<u8> = Romfs::load_bytes(&rom_fs, fat_offset, fat_offset + fat_size);
+                let mut file_addresses_list: Vec<FatEntry> = vec![];
+                for chunk in fat_list.chunks_exact(8) {
+                    if let (start, end) = chunk.split_at(4) {
+                        let file_addresses = FatEntry {
+                            start_address: u32::from_le_bytes(start.try_into().unwrap()),
+                            end_address: u32::from_le_bytes(end.try_into().unwrap()),
+                        };
+                        file_addresses_list.push(file_addresses);
+                    }
+                }
+            
                 file_index += 1;
-                let entry = File {
+                let file_data = rom_fs.data[file_addresses_list[file_index as usize].start_address as usize..file_addresses_list[file_index as usize].end_address as usize].try_into().unwrap();
+                let entry = NDSFile {
                     length: name_length,
                     name: name,
                     id: file_index,
+                    file_data: file_data,
                 };
-                new.sub_table_entries.push(SubTableType::File(entry));
+                new.sub_table_entries.push(SubTableType::NDSFile(entry));
             } else {
                 break
             }
@@ -129,8 +154,8 @@ pub enum TableElements {
 }
 
 #[tauri::command]
-pub fn load_directory(rom_fs: State<Romfs>) -> MainTableEntry {
-    MainTableEntry::new(&rom_fs)
+pub fn load_directory(rom_fs: State<Romfs>, offset: usize) -> MainTableEntry {
+    MainTableEntry::new(&rom_fs, offset)
 }
 
 #[tauri::command]
@@ -151,6 +176,17 @@ pub fn load_fat_entries(rom_fs: State<Romfs>) -> Vec<FatEntry> {
     }
 
     file_addresses_list
+}
+
+#[tauri::command]
+pub fn write_file_to_system(nds_file: NDSFile){
+
+    let current_path: PathBuf = env::current_dir().unwrap();
+    let final_path:String = current_path.into_os_string().into_string().unwrap()+ "/" + &nds_file.name;
+    let file_path: String = final_path;
+    let mut file = File::create(file_path).unwrap();
+
+    file.write_all(&nds_file.file_data).unwrap();
 }
 
 #[tauri::command]
