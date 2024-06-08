@@ -5,8 +5,7 @@ use tauri::State;
 use std::fs::File;
 use std::io::Write; // bring trait into scope
 use std::fs;
-use std::env;
-use std::path::PathBuf;
+use std::path::Path;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 
@@ -180,10 +179,11 @@ pub fn load_fat_entries(rom_fs: State<Romfs>) -> Vec<FatEntry> {
 
 #[tauri::command]
 pub fn write_file_to_system(nds_file: NDSFile){
-
-    let current_path: PathBuf = env::current_dir().unwrap();
-    let final_path:String = current_path.into_os_string().into_string().unwrap()+ "/" + &nds_file.name;
-    let file_path: String = final_path;
+ 
+    if !Path::new("../exported_files").exists(){
+        fs::create_dir("../exported_files").unwrap();
+    }
+    let file_path: String = "../exported_files/".to_owned() + &nds_file.name;
     let mut file = File::create(file_path).unwrap();
 
     file.write_all(&nds_file.file_data).unwrap();
