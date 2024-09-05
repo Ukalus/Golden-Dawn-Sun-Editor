@@ -1,4 +1,4 @@
-# Golden Sun: Dark Dawn RE
+![Frame1.png](Frame1.png)
 
 Work on a Editor has begun:
 - First goal is viewing all the files look at the README.md inside FileExplorer for more details
