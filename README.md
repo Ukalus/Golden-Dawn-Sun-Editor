@@ -143,9 +143,9 @@ flowchart LR
     C[(FNT Subtable)]
 
     d[FNT Entry]
-    e[FNT SubEntry]
-    e2[FNT SubEntry]
-    e3[...]
+    e[FNT SubEntry 1]
+    e2[FNT SubEntry 2]
+    e3[FNT SubEntry ...n]
     f[FAT Entry]
 
     D{Is File?}
