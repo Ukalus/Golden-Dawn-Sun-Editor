@@ -5,7 +5,7 @@ A Editor for Golden Sun: Dark Dawn
 
 ## Apicula
 
-![Apicula](https://github.com/scurest/apicula) is an Application for viewing NDS models written in just. The Backend of this Application is written in Rust aswell, so maybe i could take some parts of it to display files in my editor (If its OpenSource, have to check).
+![Apicula](https://github.com/scurest/apicula) is an Application for viewing NDS models written in Rust. The Backend of this Application is written in Rust aswell, so maybe i could take some parts of it to display files in my editor (If its OpenSource, have to check).
 Apicula displays most of the Models, Textures and Sprites and Animations correctly, there is currently a bug where some models are rendered weirdly when a certain Draw command is used. Here is the Issue: 
 
 https://github.com/scurest/apicula/issues/22
