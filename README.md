@@ -152,11 +152,14 @@ flowchart LR
 
     A --> d 
     d --> C
-    C --> e3
-    C --> e2
+    
     C --> e
+    C --> e2
+    C --> e3
     
     e --> D
+    e2 --> D
+    e3 --> D
 
     D -->|No, its a Directory| A
     D -->|Yes, its a file| B --> f
