@@ -140,14 +140,20 @@ packet-beta
 flowchart LR
     A[(FNT Table)]
     B[(FAT Table)]
-    C[(FNT sub table entry)]
+    C[(FNT Subtable)]
+
+    d[FNT Entry]
+    e[FNT SubEntry]
+    f[FAT Entry]
 
     D{Is File?}
 
-    A --> C
-    C --> D
+    A --> d --> C
+    C --> e --> D
+
     D -->|No, its a Directory| A
-    D -->|Yes, its a file| B
+    D -->|Yes, its a file| B --> f
+
 ```
 
 ## Helpful Commands
