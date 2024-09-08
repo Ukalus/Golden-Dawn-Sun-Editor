@@ -1,11 +1,37 @@
 ![Frame1.png](Frame1.png)
 
-Work on a Editor has begun:
-- First goal is viewing all the files look at the README.md inside FileExplorer for more details
+A Editor for Golden Sun: Dark Dawn 
+
+# NDS HEADER
+
+```mermaid
+packet-beta
+title NDS HEADER
+0-11: "GT"
+12-15: "GC"
+16-17: "MC"
+18: "UC"
+19: "ESS"
+20: "DVC"
+21-28: "Reserved"
+29: "Reg"
+30: "ver"
+31: "AS"
+32-35: "ARM9-offset"
+36-39: "ARM9-entry"
+40-43: "ARM9-RAM"
+44-47: "ARM9-size"
+48-51: "ARM7-offset"
+52-55: "ARM7-entry"
+56-59: "ARM7-RAM"
+60-63: "ARM7-size"
 
 
 
-note: Apicula might be responible for some of the messed up models (weird proportions) 
+
+```
+
+# notes: Apicula might be responible for some of the messed up models (weird proportions) 
 it could have something todo with the skeleton matrices
 
 # Current best way to export the most amount of assets so that one can view / extract them with apicula
