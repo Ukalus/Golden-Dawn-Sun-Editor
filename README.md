@@ -57,15 +57,12 @@ title NDS HEADER
 360-363: "DBG-ram-addr"
 364-367: "Reserved"
 368-511: "Reserved (zero filled) (transferred, but not stored in RAM)"
-512-4095: "Reserved (zero filled) (usually not transferred)"
-
-
-
-
-
-
-
+512-543: "Reserved (zero filled) (usually not transferred) length: 512-4095"
 ```
+Special Thanks to Martin Korth for all the information availiable at: http://problemkaputt.de
+
+
+This Diagram is just for general overview more info ![here](http://problemkaputt.de/gbatek-ds-cartridge-header.htm)
 
 # notes: Apicula might be responible for some of the messed up models (weird proportions) 
 it could have something todo with the skeleton matrices
