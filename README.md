@@ -144,12 +144,19 @@ flowchart LR
 
     d[FNT Entry]
     e[FNT SubEntry]
+    e2[FNT SubEntry]
+    e3[...]
     f[FAT Entry]
 
     D{Is File?}
 
-    A --> d --> C
-    C --> e --> D
+    A --> d 
+    d --> C
+    C --> e3
+    C --> e2
+    C --> e
+    
+    e --> D
 
     D -->|No, its a Directory| A
     D -->|Yes, its a file| B --> f
