@@ -64,45 +64,32 @@ Special Thanks to Martin Korth for all the information availiable at: http://pro
 
 This Diagram is just for general overview more info ![here](http://problemkaputt.de/gbatek-ds-cartridge-header.htm)
 
-# notes: Apicula might be responible for some of the messed up models (weird proportions) 
-it could have something todo with the skeleton matrices
+# notes: 
 
-# Current best way to export the most amount of assets so that one can view / extract them with apicula
+## Apicula
 
-1. Unpack with Tinke 
-2. Unpack with Tinke again
-3. Unpack with Tinke AGAIN (No joke)
-4. Make sure lzx is installed in the third_party folder (quick setup script needs this to decompress files)
-5. run `python ./scripts/quick_setup` 
-6. enjoy ( current highest number of viewable models: 4270) some texture bugs
+![Apicula](https://github.com/scurest/apicula) is an Application for viewing NDS models written in just. The Backend of this Application is written in Rust aswell, so maybe i could take some parts of it to display files in my editor (If its OpenSource, have to check).
+Apicula displays most of the Models, Textures and Sprites and Animations correctly, there is currently a bug where some models are rendered weirdly when a certain Draw command is used. Here is the Issue: 
 
-## Tools
+https://github.com/scurest/apicula/issues/22
 
-- Apicula (Used to view and convert Nintendo asset files)
-- Ndstool (Used to unpack the Rom into a folder structure)
-- Nintendo_DS_Decompressor (collection of tools used to decompress files)
-- Tinke (for unpacking .NARC files)
+## Tinke
 
-## Initialize the Project
+Tinke is a Tool for unpacking a ROM written in C#. Some Folders and Files inside the rom are "archived" multiple times in the NARC format.
+By unpacking the folder multiple times it is possible to extract the currently biggest list of files as far as i know ( current highest number of viewable models: 4270).
 
-#### Quick Setup
+![Tinke](https://github.com/pleonex/tinke)
 
-    ./quick_setup ./ROM/filename.nds
+## LZX
 
-#### 1. Get a Golden Sun: Dark Dawn ROM
+Some Files are compressed using LZ11 this tool can decompress these files 
 
-You can dump the file from your Legally owned Cardridge
+## NDS Tool
 
-#### 2. Put it in the ROM folder of this project
+https://github.com/PeterLemon/Nintendo_DS_Compressors
 
-#### 3. Extract the ROMs datafiles (Assets of the game)
-
-This only gives you the Assets of the ROM, not the Code 
-
-    ndstool -x .ROM/filename.nds -d unpacked_rom/data
-
-#### 4.  
-
+A collection of decompression tools, we need LZX to decompress some files that have are LZ40 compressed. you can identify these files by their first two bytes "0x40" 
+ 
 ## Helpful Commands
 
 Unpacking a NDS rom 
@@ -178,29 +165,3 @@ Get all paths of file with certain extension
 - Its a NARC Archive file that has compressed (some) files inside!
 - some of the files have the same compression used in .cbmdl files (LZ40)
 - Some Models have weird Proportions (like very a small head) <- still has to be figured out why
-
-
-
-# IMPORTANT NOTE 16 Dec 2023: 
-
-It turns out you can unpack even narc files inside the NITRO file system with tinke. as far as i can see this works only 1 layer deep and after unpacking there are still some narcs left. cbarc files are also not unpacked so it might still be usefull to write a tool for unpacking myself.
-
-you can open the unpacked folder just twice or thrice to unpack the nested narcs but this is really annoying
-
-narcs left after unpacking the entire rom with tinke:
-
-./unpacked_rom/mapdata/wldmap/worldmap.narc/worldobject.narc
-./unpacked_rom/mapdata/wldmap/worldmap.narc/worldtex.narc
-./unpacked_rom/flmodel/djinn02.narc/djinn02.narc
-./unpacked_rom/flmodel/f_tprn_arw.narc/f_tprn_arw.narc
-./unpacked_rom/flmodel/chibi_col_04.narc/niru.narc
-
-after unpacking it twice
-
-./unpacked_rom/flmodel/djinn02.narc/djinn02.narc/djinn02.narc
-./unpacked_rom/flmodel/chibi_col_04.narc/niru.narc/niru.narc
-
-cbarcs left after unpacking the entire rom with tinke
-
-All 
-*Also seems like only enemys are stored in cbarc files.. interesting 
