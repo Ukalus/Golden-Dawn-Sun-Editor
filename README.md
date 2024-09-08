@@ -64,8 +64,6 @@ Special Thanks to Martin Korth for all the information availiable at: http://pro
 
 This Diagram is just for general overview more info ![here](http://problemkaputt.de/gbatek-ds-cartridge-header.htm)
 
-# notes: 
-
 ## Apicula
 
 ![Apicula](https://github.com/scurest/apicula) is an Application for viewing NDS models written in just. The Backend of this Application is written in Rust aswell, so maybe i could take some parts of it to display files in my editor (If its OpenSource, have to check).
