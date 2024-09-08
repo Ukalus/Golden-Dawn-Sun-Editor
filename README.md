@@ -134,6 +134,21 @@ packet-beta
     44-45: "..."
     46-47: "..."
 ```
+## How to Read The Entire File System?
+
+```mermaid
+flowchart LR
+    A[(FNT Table)]
+    B[(FAT Table)]
+    C[(FNT sub table entry)]
+
+    D{Is File?}
+
+    A --> C
+    C --> D
+    D -->|No, its a Directory| A
+    D -->|Yes, its a file| B
+```
 
 ## Helpful Commands
 
