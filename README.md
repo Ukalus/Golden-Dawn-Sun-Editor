@@ -2,6 +2,31 @@
 
 A Editor for Golden Sun: Dark Dawn 
 
+
+## Apicula
+
+![Apicula](https://github.com/scurest/apicula) is an Application for viewing NDS models written in just. The Backend of this Application is written in Rust aswell, so maybe i could take some parts of it to display files in my editor (If its OpenSource, have to check).
+Apicula displays most of the Models, Textures and Sprites and Animations correctly, there is currently a bug where some models are rendered weirdly when a certain Draw command is used. Here is the Issue: 
+
+https://github.com/scurest/apicula/issues/22
+
+## Tinke
+
+Tinke is a Tool for unpacking a ROM written in C#. Some Folders and Files inside the rom are "archived" multiple times in the NARC format.
+By unpacking the folder multiple times it is possible to extract the currently biggest list of files as far as i know ( current highest number of viewable models: 4270).
+
+![Tinke](https://github.com/pleonex/tinke)
+
+## LZX
+
+Some Files are compressed using LZ11 this tool can decompress these files 
+
+## NDS Tool
+
+https://github.com/PeterLemon/Nintendo_DS_Compressors
+
+A collection of decompression tools, we need LZX to decompress some files that have are LZ40 compressed. you can identify these files by their first two bytes "0x40" 
+
 # NDS HEADER
 
 ```mermaid
@@ -64,30 +89,6 @@ Special Thanks to Martin Korth for all the information availiable at: http://pro
 
 This Diagram is just for general overview more info ![here](http://problemkaputt.de/gbatek-ds-cartridge-header.htm)
 
-## Apicula
-
-![Apicula](https://github.com/scurest/apicula) is an Application for viewing NDS models written in just. The Backend of this Application is written in Rust aswell, so maybe i could take some parts of it to display files in my editor (If its OpenSource, have to check).
-Apicula displays most of the Models, Textures and Sprites and Animations correctly, there is currently a bug where some models are rendered weirdly when a certain Draw command is used. Here is the Issue: 
-
-https://github.com/scurest/apicula/issues/22
-
-## Tinke
-
-Tinke is a Tool for unpacking a ROM written in C#. Some Folders and Files inside the rom are "archived" multiple times in the NARC format.
-By unpacking the folder multiple times it is possible to extract the currently biggest list of files as far as i know ( current highest number of viewable models: 4270).
-
-![Tinke](https://github.com/pleonex/tinke)
-
-## LZX
-
-Some Files are compressed using LZ11 this tool can decompress these files 
-
-## NDS Tool
-
-https://github.com/PeterLemon/Nintendo_DS_Compressors
-
-A collection of decompression tools, we need LZX to decompress some files that have are LZ40 compressed. you can identify these files by their first two bytes "0x40" 
- 
 ## Helpful Commands
 
 Unpacking a NDS rom 
