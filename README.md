@@ -2,6 +2,18 @@
 
 A Editor for Golden Sun: Dark Dawn 
 
+## MelonDS
+
+MelonDS is a Emulator that runs native on Linux and is OpenSource. It has some Debugging capabilities that you can use with `GDB`. 
+
+![https://sourceware.org/gdb/](https://sourceware.org/gdb/)
+
+how to start GDB and live Debugging:
+
+    arm-none-eabi-gdb -ex "set arch armv5t"
+
+make sure that GDB server is actually running, theres currently a bug in MelonDS. you can activate MelonDS through 
+`melonDS.toml`
 
 ## Apicula
 
