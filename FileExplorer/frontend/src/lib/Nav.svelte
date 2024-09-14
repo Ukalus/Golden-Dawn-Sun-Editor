@@ -9,6 +9,7 @@
         <NavLi href="/META_table">META_TABLE</NavLi>
         <NavLi href="/FNT_table">FNT_TABLE</NavLi>
         <NavLi href="/FAT_table">FAT_TABLE</NavLi>
+        <NavLi href="/fileBrowser">FileBrowser</NavLi>
     </NavUl>
     
 </Navbar>

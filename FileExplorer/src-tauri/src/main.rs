@@ -8,7 +8,7 @@ mod utils;
 
 fn main() {
     tauri::Builder::default()
-    .manage(rom::load_rom("/home/ukalus/projects/golden_sun_reverse/ROM/Golden Sun - Dark Dawn (USA, Australia) (En,Es).nds"))
+    .manage(rom::load_rom("/home/ukalus/Desktop/Golden Sun - Dark Dawn (USA, Australia) (En,Es).nds"))
     .invoke_handler(tauri::generate_handler![
       header::load_meta,
       file_system::load_fat_entries,
